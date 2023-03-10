@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BuyLevel : MonoBehaviour
 {
-    [SerializeField] private GameManager _gameManager;
+    [SerializeField] private GameMechanism _gameManager;
 
     public int[] CostIntLevel;
     public int[] CostBonus;

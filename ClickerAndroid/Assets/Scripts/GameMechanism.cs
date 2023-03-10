@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-public class GameManager : MonoBehaviour
+public class GameMechanism : MonoBehaviour
 {
     [SerializeField] public int scoreCoins;
     [SerializeField] private BuyLevel _buyLevel;
@@ -70,7 +70,6 @@ public class GameManager : MonoBehaviour
         scoreCoins += clickScore;
     }
 
-#if UNITY_ANDROID && !UNITY_EDITOR
     private void OnApplicationPause(bool pause)
     {
         sv.scoreCoins = scoreCoins;
@@ -93,30 +92,28 @@ public class GameManager : MonoBehaviour
 
         PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
     }
-#else
-    private void OnApplicationQuit()
-    {
-        sv.scoreCoins = scoreCoins;
-        sv.clickScore = clickScore;
-        sv.CostBonus = new int[1];
-        sv.CostIntLevel = new int[2];
+    //private void OnApplicationQuit()
+    //{
+    //    sv.scoreCoins = scoreCoins;
+    //    sv.clickScore = clickScore;
+    //    sv.CostBonus = new int[1];
+    //    sv.CostIntLevel = new int[2];
 
-        for (int i = 0; i < 1; i++)
-        {
-            sv.CostBonus[i] = _buyLevel.CostBonus[i];
-        }
+    //    for (int i = 0; i < 1; i++)
+    //    {
+    //        sv.CostBonus[i] = _buyLevel.CostBonus[i];
+    //    }
 
-        for (int i = 0; i < 2; i++)
-        {
-            sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
-        }
+    //    for (int i = 0; i < 2; i++)
+    //    {
+    //        sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+    //    }
 
-        sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
-        sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
+    //    sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
+    //    sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
 
-        PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
-    }
-#endif
+    //    PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
+    //}
 }
 
 [Serializable]
