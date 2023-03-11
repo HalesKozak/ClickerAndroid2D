@@ -17,8 +17,10 @@ public class GameMechanism : MonoBehaviour
     public Text scoreText;
 
     public int clickScore=1;
-
     private int TotalScoreCoinsBonus;
+
+    public AudioSource openClosePanelSource;
+    public AudioSource clickCoinSource;
 
     private void Awake()
     {
@@ -38,7 +40,7 @@ public class GameMechanism : MonoBehaviour
             for (int i = 0; i < 2; i++)
             {
                 _buyLevel.CostIntLevel[i] = sv.CostIntLevel[i];
-                _buyLevel.CostText[i].text = sv.CostIntLevel[i] + " $";
+                _buyLevel.CostText[i].text = sv.CostIntLevel[i] + " ";
             }
         }
     }
@@ -53,46 +55,32 @@ public class GameMechanism : MonoBehaviour
 
     void Update()
     {
-        scoreText.text = scoreCoins+" $ ";
+        scoreText.text = scoreCoins +" ";
     }
 
     public void ShowAndHideShopPanel()
     {
         shopPanel.SetActive(!shopPanel.activeSelf);
+        openClosePanelSource.Play();
     }
     public void ShowAndHideBonusPanel()
     {
         bonusPanel.SetActive(!bonusPanel.activeSelf);
+        openClosePanelSource.Play();
     }
 
     public void OnclickButton()
     {
         scoreCoins += clickScore;
+        clickCoinSource.Play();
     }
 
-    private void OnApplicationPause(bool pause)
+    public void DeleteKey()
     {
-        sv.scoreCoins = scoreCoins;
-        sv.clickScore = clickScore;
-        sv.CostBonus = new int[1];
-        sv.CostIntLevel = new int[2];
-
-        for (int i = 0; i < 1; i++)
-        {
-            sv.CostBonus[i] = _buyLevel.CostBonus[i];
-        }
-
-        for (int i = 0; i < 2; i++)
-        {
-            sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
-        }
-
-        sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
-        sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
-
-        PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
+        PlayerPrefs.DeleteAll();
     }
-    //private void OnApplicationQuit()
+
+    //private void OnApplicationPause(bool pause)
     //{
     //    sv.scoreCoins = scoreCoins;
     //    sv.clickScore = clickScore;
@@ -114,6 +102,28 @@ public class GameMechanism : MonoBehaviour
 
     //    PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
     //}
+    private void OnApplicationQuit()
+    {
+        sv.scoreCoins = scoreCoins;
+        sv.clickScore = clickScore;
+        sv.CostBonus = new int[1];
+        sv.CostIntLevel = new int[2];
+
+        for (int i = 0; i < 1; i++)
+        {
+            sv.CostBonus[i] = _buyLevel.CostBonus[i];
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+        }
+
+        sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
+        sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
+
+        PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
+    }
 }
 
 [Serializable]
