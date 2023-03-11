@@ -22,7 +22,7 @@ public class GameMechanism : MonoBehaviour
     public AudioSource openClosePanelSource;
     public AudioSource clickCoinSource;
 
-    private void Awake()
+    public void SearchSavedKey()
     {
         if (PlayerPrefs.HasKey("SV"))
         {
@@ -42,10 +42,12 @@ public class GameMechanism : MonoBehaviour
                 _buyLevel.CostIntLevel[i] = sv.CostIntLevel[i];
                 _buyLevel.CostText[i].text = sv.CostIntLevel[i] + " ";
             }
+
+            TotalScoreBonus();
         }
     }
 
-    private void Start()
+    private void TotalScoreBonus()
     {
         DateTime dateTime = new DateTime(sv.Date[0], sv.Date[1], sv.Date[2], sv.Date[3], sv.Date[4], sv.Date[5]);
         TimeSpan timeSpan = DateTime.Now - dateTime;
@@ -75,9 +77,10 @@ public class GameMechanism : MonoBehaviour
         clickCoinSource.Play();
     }
 
-    public void DeleteKey()
+    public void SavingGame()
     {
-        PlayerPrefs.DeleteAll();
+        //OnApplicationQuit();
+        OnApplicationPause(true);
     }
 
     private void OnApplicationPause(bool pause)
@@ -102,6 +105,7 @@ public class GameMechanism : MonoBehaviour
 
         PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
     }
+
     //private void OnApplicationQuit()
     //{
     //    sv.scoreCoins = scoreCoins;
