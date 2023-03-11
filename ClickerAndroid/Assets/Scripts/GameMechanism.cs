@@ -80,29 +80,7 @@ public class GameMechanism : MonoBehaviour
         PlayerPrefs.DeleteAll();
     }
 
-    //private void OnApplicationPause(bool pause)
-    //{
-    //    sv.scoreCoins = scoreCoins;
-    //    sv.clickScore = clickScore;
-    //    sv.CostBonus = new int[1];
-    //    sv.CostIntLevel = new int[2];
-
-    //    for (int i = 0; i < 1; i++)
-    //    {
-    //        sv.CostBonus[i] = _buyLevel.CostBonus[i];
-    //    }
-
-    //    for (int i = 0; i < 2; i++)
-    //    {
-    //        sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
-    //    }
-
-    //    sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
-    //    sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
-
-    //    PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
-    //}
-    private void OnApplicationQuit()
+    private void OnApplicationPause(bool pause)
     {
         sv.scoreCoins = scoreCoins;
         sv.clickScore = clickScore;
@@ -124,6 +102,28 @@ public class GameMechanism : MonoBehaviour
 
         PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
     }
+    //private void OnApplicationQuit()
+    //{
+    //    sv.scoreCoins = scoreCoins;
+    //    sv.clickScore = clickScore;
+    //    sv.CostBonus = new int[1];
+    //    sv.CostIntLevel = new int[2];
+
+    //    for (int i = 0; i < 1; i++)
+    //    {
+    //        sv.CostBonus[i] = _buyLevel.CostBonus[i];
+    //    }
+
+    //    for (int i = 0; i < 2; i++)
+    //    {
+    //        sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+    //    }
+
+    //    sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
+    //    sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
+
+    //    PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
+    //}
 }
 
 [Serializable]
