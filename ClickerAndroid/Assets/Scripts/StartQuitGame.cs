@@ -16,12 +16,6 @@ public class StartQuitGame : MonoBehaviour
         openClosePanelSource.Play();
     }
 
-    public void DeleteResult()
-    {
-        openClosePanelSource.Play();
-        PlayerPrefs.DeleteAll();
-    }
-
     public void QuitGame()
     {
         openClosePanelSource.Play();

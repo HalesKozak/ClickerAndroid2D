@@ -12,35 +12,37 @@ public class GameMechanism : MonoBehaviour
     public GameObject shopPanel;
     public GameObject bonusPanel;
 
-    private Save sv = new Save();
+    private SaveProgress saveProgress = new SaveProgress();
 
     public Text scoreText;
 
     public int clickScore=1;
     private int TotalScoreCoinsBonus;
+    private int firstCostClick = 100;
+    private int firstCostBonus = 500;
 
     public AudioSource openClosePanelSource;
     public AudioSource clickCoinSource;
 
     public void SearchSavedKey()
     {
-        if (PlayerPrefs.HasKey("SV"))
+        if (PlayerPrefs.HasKey("Progress"))
         {
-            sv = JsonUtility.FromJson<Save>(PlayerPrefs.GetString("SV"));
+            saveProgress = JsonUtility.FromJson<SaveProgress>(PlayerPrefs.GetString("Progress"));
 
-            scoreCoins = sv.scoreCoins;
-            clickScore = sv.clickScore;
+            scoreCoins = saveProgress.scoreCoins;
+            clickScore = saveProgress.clickScore;
 
             for (int i = 0; i < 1; i++)
             {
-                _buyLevel.CostBonus[i] = sv.CostBonus[i];
-                TotalScoreCoinsBonus += sv.CostBonus[i];
+                _buyLevel.CostBonus[i] = saveProgress.CostBonus[i];
+                TotalScoreCoinsBonus += saveProgress.CostBonus[i];
             }
 
             for (int i = 0; i < 2; i++)
             {
-                _buyLevel.CostIntLevel[i] = sv.CostIntLevel[i];
-                _buyLevel.CostText[i].text = sv.CostIntLevel[i] + " ";
+                _buyLevel.CostIntLevel[i] = saveProgress.CostIntLevel[i];
+                _buyLevel.CostText[i].text = saveProgress.CostIntLevel[i] + " ";
             }
 
             TotalScoreBonus();
@@ -49,7 +51,7 @@ public class GameMechanism : MonoBehaviour
 
     private void TotalScoreBonus()
     {
-        DateTime dateTime = new DateTime(sv.Date[0], sv.Date[1], sv.Date[2], sv.Date[3], sv.Date[4], sv.Date[5]);
+        DateTime dateTime = new DateTime(saveProgress.Date[0], saveProgress.Date[1], saveProgress.Date[2], saveProgress.Date[3], saveProgress.Date[4], saveProgress.Date[5]);
         TimeSpan timeSpan = DateTime.Now - dateTime;
 
         scoreCoins += (int)timeSpan.TotalSeconds * TotalScoreCoinsBonus;
@@ -77,61 +79,65 @@ public class GameMechanism : MonoBehaviour
         clickCoinSource.Play();
     }
 
-    public void SavingGame()
+    public void SavingProgressGame()
     {
-        //OnApplicationQuit();
-        OnApplicationPause(true);
-    }
-
-    private void OnApplicationPause(bool pause)
-    {
-        sv.scoreCoins = scoreCoins;
-        sv.clickScore = clickScore;
-        sv.CostBonus = new int[1];
-        sv.CostIntLevel = new int[2];
+        saveProgress.scoreCoins = scoreCoins;
+        saveProgress.clickScore = clickScore;
+        saveProgress.CostBonus = new int[1];
+        saveProgress.CostIntLevel = new int[2];
 
         for (int i = 0; i < 1; i++)
         {
-            sv.CostBonus[i] = _buyLevel.CostBonus[i];
+            saveProgress.CostBonus[i] = _buyLevel.CostBonus[i];
         }
 
         for (int i = 0; i < 2; i++)
         {
-            sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+            saveProgress.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
         }
 
-        sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
-        sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
+        saveProgress.Date[0] = DateTime.Now.Year; saveProgress.Date[1] = DateTime.Now.Month; saveProgress.Date[2] = DateTime.Now.Day;
+        saveProgress.Date[3] = DateTime.Now.Hour; saveProgress.Date[4] = DateTime.Now.Minute; saveProgress.Date[5] = DateTime.Now.Second;
 
-        PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
+        PlayerPrefs.SetString("Progress", JsonUtility.ToJson(saveProgress));
     }
 
-    //private void OnApplicationQuit()
-    //{
-    //    sv.scoreCoins = scoreCoins;
-    //    sv.clickScore = clickScore;
-    //    sv.CostBonus = new int[1];
-    //    sv.CostIntLevel = new int[2];
+    public void ResetResult()
+    {
+        scoreCoins = 0;
+        clickScore = 1;
 
-    //    for (int i = 0; i < 1; i++)
-    //    {
-    //        sv.CostBonus[i] = _buyLevel.CostBonus[i];
-    //    }
+        for (int i = 0; i < 1; i++)
+        {
+            _buyLevel.CostBonus[i] = 0;
+            TotalScoreCoinsBonus += saveProgress.CostBonus[i];
+        }
 
-    //    for (int i = 0; i < 2; i++)
-    //    {
-    //        sv.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
-    //    }
+        _buyLevel.CostIntLevel[0] = firstCostClick;
+        _buyLevel.CostIntLevel[1] = firstCostBonus;
+        for (int i = 0; i < 2; i++)
+        {
+            _buyLevel.CostText[i].text = _buyLevel.CostIntLevel[i] + " ";
+        }
 
-    //    sv.Date[0] = DateTime.Now.Year; sv.Date[1] = DateTime.Now.Month; sv.Date[2] = DateTime.Now.Day;
-    //    sv.Date[3] = DateTime.Now.Hour; sv.Date[4] = DateTime.Now.Minute; sv.Date[5] = DateTime.Now.Second;
+        PlayerPrefs.DeleteKey("Progress");
 
-    //    PlayerPrefs.SetString("SV", JsonUtility.ToJson(sv));
-    //}
+        openClosePanelSource.Play();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        SavingProgressGame();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SavingProgressGame();
+    }
 }
 
 [Serializable]
-public class Save
+public class SaveProgress
 {
     public int scoreCoins;
     public int clickScore;
