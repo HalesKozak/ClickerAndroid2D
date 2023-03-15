@@ -29,17 +29,17 @@ public class OptionsButton : MonoBehaviour
 
             _musicSlider.value = saveOptions.musicValue;
             _SFXSlider.value = saveOptions.SFXValue;
-
-            Debug.Log(_musicSlider.value);
-            Debug.Log(_SFXSlider.value);
-
-            ChangeMusicVolume();
-            ChangeSFXVolume();
         }
         else
         {
             DefaultOptions();
         }
+    }
+
+    private void Start()
+    {
+        ChangeMusicVolume();
+        ChangeSFXVolume();
     }
 
     public void DefaultOptions()
@@ -64,6 +64,7 @@ public class OptionsButton : MonoBehaviour
     {
         menuPanel.SetActive(!menuPanel.activeSelf);
         optionsPanel.SetActive(!optionsPanel.activeSelf);
+
         openClosePanelSource.Play();
     }
     public void SaveOptions()

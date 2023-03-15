@@ -7,10 +7,12 @@ using System;
 public class GameMechanism : MonoBehaviour
 {
     [SerializeField] public int scoreCoins;
+
     [SerializeField] private BuyLevel _buyLevel;
 
     public GameObject shopPanel;
     public GameObject bonusPanel;
+    public GameObject achievementPanel;
 
     private SaveProgress saveProgress = new SaveProgress();
 
@@ -21,8 +23,31 @@ public class GameMechanism : MonoBehaviour
     private int firstCostClick = 100;
     private int firstCostBonus = 500;
 
+    [Header("Досягнення")]
+    public int[] CostMaxAchievement;
+    public int[] currentCostAhievement = { 0, 0, 0 };
+
+    public Slider[] achievementSlider;
+
+    public GameObject[] achievementImage;
+
     public AudioSource openClosePanelSource;
     public AudioSource clickCoinSource;
+
+    private void Start()
+    {
+        for (int i = 0; i < CostMaxAchievement.Length; i++)
+        {
+            achievementSlider[i].maxValue = CostMaxAchievement[i];
+            achievementSlider[i].value = currentCostAhievement[i];
+        }
+    }
+
+    private void Update()
+    {
+        scoreText.text = scoreCoins + " ";
+
+    }
 
     public void SearchSavedKey()
     {
@@ -57,26 +82,55 @@ public class GameMechanism : MonoBehaviour
         scoreCoins += (int)timeSpan.TotalSeconds * TotalScoreCoinsBonus;
     } 
 
-    void Update()
-    {
-        scoreText.text = scoreCoins +" ";
-    }
-
     public void ShowAndHideShopPanel()
     {
         shopPanel.SetActive(!shopPanel.activeSelf);
         openClosePanelSource.Play();
     }
+
     public void ShowAndHideBonusPanel()
     {
         bonusPanel.SetActive(!bonusPanel.activeSelf);
         openClosePanelSource.Play();
     }
 
+    public void ShowAndHideAchivmentPanel()
+    {
+        achievementPanel.SetActive(!achievementPanel.activeSelf);
+        openClosePanelSource.Play();
+    }
+
     public void OnclickButton()
     {
         scoreCoins += clickScore;
+
+        for (int i = 0; i < CostMaxAchievement.Length; i++)
+        {
+            if (currentCostAhievement[i] < CostMaxAchievement[i])
+            {
+                currentCostAhievement[i]++;
+                achievementSlider[i].value = currentCostAhievement[i];
+            }
+            if (currentCostAhievement[i] == CostMaxAchievement[i])
+            {
+                achievementImage[i].SetActive(true);
+            }
+        }
+        
         clickCoinSource.Play();
+    }
+
+    public void ValueAchievement(int i)
+    {
+        achievementImage[i].SetActive(false);
+
+        achievementSlider[i].maxValue += achievementSlider[i].maxValue;
+        achievementSlider[i].value = 0;
+
+        currentCostAhievement[i] = 0;
+        CostMaxAchievement[i] += CostMaxAchievement[i];
+
+
     }
 
     public void SavingProgressGame()
@@ -124,16 +178,33 @@ public class GameMechanism : MonoBehaviour
 
         openClosePanelSource.Play();
     }
+    //private void OnApplicationQuit()
+    //{
+    //    saveProgress.scoreCoins = scoreCoins;
+    //    saveProgress.clickScore = clickScore;
+    //    saveProgress.CostBonus = new int[1];
+    //    saveProgress.CostIntLevel = new int[2];
 
-    private void OnApplicationPause(bool pause)
-    {
-        SavingProgressGame();
-    }
+    //    for (int i = 0; i < 1; i++)
+    //    {
+    //        saveProgress.CostBonus[i] = _buyLevel.CostBonus[i];
+    //    }
 
-    private void OnApplicationQuit()
+    //    for (int i = 0; i < 2; i++)
+    //    {
+    //        saveProgress.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+    //    }
+
+    //    saveProgress.Date[0] = DateTime.Now.Year; saveProgress.Date[1] = DateTime.Now.Month; saveProgress.Date[2] = DateTime.Now.Day;
+    //    saveProgress.Date[3] = DateTime.Now.Hour; saveProgress.Date[4] = DateTime.Now.Minute; saveProgress.Date[5] = DateTime.Now.Second;
+
+    //    PlayerPrefs.SetString("Progress", JsonUtility.ToJson(saveProgress));
+    //}
+
+    public void OnClickAchievementButton()
     {
-        SavingProgressGame();
-    }
+
+    } 
 }
 
 [Serializable]
