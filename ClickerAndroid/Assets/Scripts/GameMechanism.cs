@@ -9,6 +9,7 @@ public class GameMechanism : MonoBehaviour
     [SerializeField] public int scoreCoins;
 
     [SerializeField] private BuyLevel _buyLevel;
+    [SerializeField] private AchievementsPrize _achievementsPrize;
 
     public GameObject shopPanel;
     public GameObject bonusPanel;
@@ -34,19 +35,9 @@ public class GameMechanism : MonoBehaviour
     public AudioSource openClosePanelSource;
     public AudioSource clickCoinSource;
 
-    private void Start()
-    {
-        for (int i = 0; i < CostMaxAchievement.Length; i++)
-        {
-            achievementSlider[i].maxValue = CostMaxAchievement[i];
-            achievementSlider[i].value = currentCostAhievement[i];
-        }
-    }
-
     private void Update()
     {
         scoreText.text = scoreCoins + " ";
-
     }
 
     public void SearchSavedKey()
@@ -55,20 +46,28 @@ public class GameMechanism : MonoBehaviour
         {
             saveProgress = JsonUtility.FromJson<SaveProgress>(PlayerPrefs.GetString("Progress"));
 
-            scoreCoins = saveProgress.scoreCoins;
-            clickScore = saveProgress.clickScore;
+            scoreCoins = saveProgress.scoreCoinsSave;
+            clickScore = saveProgress.clickScoreSave;
 
             for (int i = 0; i < 1; i++)
             {
-                _buyLevel.CostBonus[i] = saveProgress.CostBonus[i];
-                TotalScoreCoinsBonus += saveProgress.CostBonus[i];
+                _buyLevel.CostBonus[i] = saveProgress.CostBonusSave[i];
+                TotalScoreCoinsBonus += saveProgress.CostBonusSave[i];
             }
 
             for (int i = 0; i < 2; i++)
             {
-                _buyLevel.CostIntLevel[i] = saveProgress.CostIntLevel[i];
-                _buyLevel.CostText[i].text = saveProgress.CostIntLevel[i] + " ";
+                _buyLevel.CostIntLevel[i] = saveProgress.CostIntLevelSave[i];
+                _buyLevel.CostText[i].text = saveProgress.CostIntLevelSave[i] + " ";
             }
+
+            for (int i = 0; i < 3; i++)
+            {
+                CostMaxAchievement[i] = saveProgress.CostMaxAchievementSave[i];
+                currentCostAhievement[i] = saveProgress.currentCostAhievementSave[i];
+            }
+
+            LoadingAchievement();
 
             TotalScoreBonus();
         }
@@ -76,7 +75,7 @@ public class GameMechanism : MonoBehaviour
 
     private void TotalScoreBonus()
     {
-        DateTime dateTime = new DateTime(saveProgress.Date[0], saveProgress.Date[1], saveProgress.Date[2], saveProgress.Date[3], saveProgress.Date[4], saveProgress.Date[5]);
+        DateTime dateTime = new DateTime(saveProgress.DateSave[0], saveProgress.DateSave[1], saveProgress.DateSave[2], saveProgress.DateSave[3], saveProgress.DateSave[4], saveProgress.DateSave[5]);
         TimeSpan timeSpan = DateTime.Now - dateTime;
 
         scoreCoins += (int)timeSpan.TotalSeconds * TotalScoreCoinsBonus;
@@ -129,29 +128,37 @@ public class GameMechanism : MonoBehaviour
 
         currentCostAhievement[i] = 0;
         CostMaxAchievement[i] += CostMaxAchievement[i];
-
-
     }
 
     public void SavingProgressGame()
     {
-        saveProgress.scoreCoins = scoreCoins;
-        saveProgress.clickScore = clickScore;
-        saveProgress.CostBonus = new int[1];
-        saveProgress.CostIntLevel = new int[2];
+        saveProgress.scoreCoinsSave = scoreCoins;
+        saveProgress.clickScoreSave = clickScore;
+
+        saveProgress.CostBonusSave = new int[1];
+        saveProgress.CostIntLevelSave = new int[2];
+
+        saveProgress.CostMaxAchievementSave = new int[3];
+        saveProgress.currentCostAhievementSave = new int[3];
 
         for (int i = 0; i < 1; i++)
         {
-            saveProgress.CostBonus[i] = _buyLevel.CostBonus[i];
+            saveProgress.CostBonusSave[i] = _buyLevel.CostBonus[i];
         }
 
         for (int i = 0; i < 2; i++)
         {
-            saveProgress.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+            saveProgress.CostIntLevelSave[i] = _buyLevel.CostIntLevel[i];
         }
 
-        saveProgress.Date[0] = DateTime.Now.Year; saveProgress.Date[1] = DateTime.Now.Month; saveProgress.Date[2] = DateTime.Now.Day;
-        saveProgress.Date[3] = DateTime.Now.Hour; saveProgress.Date[4] = DateTime.Now.Minute; saveProgress.Date[5] = DateTime.Now.Second;
+        for (int i = 0; i < 3; i++)
+        {
+            saveProgress.CostMaxAchievementSave[i] = CostMaxAchievement[i];
+            saveProgress.currentCostAhievementSave[i] = currentCostAhievement[i];
+        }
+
+        saveProgress.DateSave[0] = DateTime.Now.Year; saveProgress.DateSave[1] = DateTime.Now.Month; saveProgress.DateSave[2] = DateTime.Now.Day;
+        saveProgress.DateSave[3] = DateTime.Now.Hour; saveProgress.DateSave[4] = DateTime.Now.Minute; saveProgress.DateSave[5] = DateTime.Now.Second;
 
         PlayerPrefs.SetString("Progress", JsonUtility.ToJson(saveProgress));
     }
@@ -160,59 +167,79 @@ public class GameMechanism : MonoBehaviour
     {
         scoreCoins = 0;
         clickScore = 1;
+        CostMaxAchievement[0] = 100;
 
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < CostMaxAchievement.Length; i++)
         {
-            _buyLevel.CostBonus[i] = 0;
-            TotalScoreCoinsBonus += saveProgress.CostBonus[i];
+            currentCostAhievement[i] = 0;
         }
 
+        _buyLevel.CostBonus[0] = 0;
         _buyLevel.CostIntLevel[0] = firstCostClick;
         _buyLevel.CostIntLevel[1] = firstCostBonus;
-        for (int i = 0; i < 2; i++)
+
+        for (int i = 0; i < _buyLevel.CostIntLevel.Length; i++)
         {
             _buyLevel.CostText[i].text = _buyLevel.CostIntLevel[i] + " ";
         }
+
+        _achievementsPrize.costPrize[0] = 100;
+        _achievementsPrize.ReloadText();
 
         PlayerPrefs.DeleteKey("Progress");
 
         openClosePanelSource.Play();
     }
+
+    private void LoadingAchievement()
+    {
+        for (int i = 0; i < CostMaxAchievement.Length; i++)
+        {
+            achievementSlider[i].maxValue = CostMaxAchievement[i];
+            achievementSlider[i].value = currentCostAhievement[i];
+
+            if (currentCostAhievement[i] == CostMaxAchievement[i])
+            {
+                achievementImage[i].SetActive(true);
+            }
+        }
+
+        _achievementsPrize.ReloadText();
+    }
+
     //private void OnApplicationQuit()
     //{
-    //    saveProgress.scoreCoins = scoreCoins;
-    //    saveProgress.clickScore = clickScore;
-    //    saveProgress.CostBonus = new int[1];
-    //    saveProgress.CostIntLevel = new int[2];
+    //    saveProgress.scoreCoinsSave = scoreCoinsSave;
+    //    saveProgress.clickScoreSave = clickScoreSave;
+    //    saveProgress.CostBonusSave = new int[1];
+    //    saveProgress.CostIntLevelSave = new int[2];
 
     //    for (int i = 0; i < 1; i++)
     //    {
-    //        saveProgress.CostBonus[i] = _buyLevel.CostBonus[i];
+    //        saveProgress.CostBonusSave[i] = _buyLevel.CostBonusSave[i];
     //    }
 
     //    for (int i = 0; i < 2; i++)
     //    {
-    //        saveProgress.CostIntLevel[i] = _buyLevel.CostIntLevel[i];
+    //        saveProgress.CostIntLevelSave[i] = _buyLevel.CostIntLevelSave[i];
     //    }
 
-    //    saveProgress.Date[0] = DateTime.Now.Year; saveProgress.Date[1] = DateTime.Now.Month; saveProgress.Date[2] = DateTime.Now.Day;
-    //    saveProgress.Date[3] = DateTime.Now.Hour; saveProgress.Date[4] = DateTime.Now.Minute; saveProgress.Date[5] = DateTime.Now.Second;
+    //    saveProgress.DateSave[0] = DateTime.Now.Year; saveProgress.DateSave[1] = DateTime.Now.Month; saveProgress.DateSave[2] = DateTime.Now.Day;
+    //    saveProgress.DateSave[3] = DateTime.Now.Hour; saveProgress.DateSave[4] = DateTime.Now.Minute; saveProgress.DateSave[5] = DateTime.Now.Second;
 
     //    PlayerPrefs.SetString("Progress", JsonUtility.ToJson(saveProgress));
     //}
-
-    public void OnClickAchievementButton()
-    {
-
-    } 
 }
 
 [Serializable]
 public class SaveProgress
 {
-    public int scoreCoins;
-    public int clickScore;
-    public int [] CostIntLevel;
-    public int [] CostBonus;
-    public int[] Date = new int[6];
+    public int scoreCoinsSave;
+    public int clickScoreSave;
+    public int [] CostIntLevelSave;
+    public int [] CostBonusSave;
+    public int[] DateSave = new int[6];
+
+    public int[] CostMaxAchievementSave;
+    public int[] currentCostAhievementSave;
 }
