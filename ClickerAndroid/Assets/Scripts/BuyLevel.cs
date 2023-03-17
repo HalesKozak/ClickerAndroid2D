@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class BuyLevel : MonoBehaviour
 {
-    [SerializeField] private GameMechanism _gameManager;
+    [SerializeField] private GameMechanism _gameMechanism;
 
     public int[] CostIntLevel;
     public int[] CostBonus;
@@ -21,24 +21,31 @@ public class BuyLevel : MonoBehaviour
     }
     public void OnClickBuyLevelShop()
     {
-        if (_gameManager.scoreCoins >= CostIntLevel[0])
+        if (_gameMechanism.scoreCoins >= CostIntLevel[0])
         {
-            _gameManager.scoreCoins -= CostIntLevel[0];
+            _gameMechanism.currentCostAhievement[1] += CostIntLevel[0];
+            _gameMechanism.scoreCoins -= CostIntLevel[0];
+
+            _gameMechanism.clickScore *= 2;
             CostIntLevel[0] *= 2;
-            _gameManager.clickScore *= 2;
             CostText[0].text = CostIntLevel[0] + " ";
+
             buyCompleteSource.Play();
         }
         else noBuySource.Play();
     }
     public void OnClickBuyLevelBonus()
     {
-        if (_gameManager.scoreCoins >= CostIntLevel[1])
+        if (_gameMechanism.scoreCoins >= CostIntLevel[1])
         {
-            _gameManager.scoreCoins -= CostIntLevel[1];
+            _gameMechanism.currentCostAhievement[1] += CostIntLevel[1];
+
+            _gameMechanism.scoreCoins -= CostIntLevel[1];
+
             CostIntLevel[1] *= 2;
-            CostBonus[0] += 2;
+            CostBonus[0] += 2*2;
             CostText[1].text = CostIntLevel[1] + " ";
+
             buyCompleteSource.Play();
         }
         else noBuySource.Play();
@@ -48,7 +55,7 @@ public class BuyLevel : MonoBehaviour
     {
         while (true)
         {
-            _gameManager.scoreCoins += CostBonus[0];
+            _gameMechanism.scoreCoins += CostBonus[0];
             yield return new WaitForSeconds(1f);
         }
     }

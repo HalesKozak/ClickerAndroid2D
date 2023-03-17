@@ -17,10 +17,10 @@ public class AchievementsPrize : MonoBehaviour
 
     public void ReloadText()
     {
-        for (int i = 0; i < taskText.Length; i++)
+        for (int i = 0; i < costPrize.Length; i++)
         {
             achivmentCostText[i].text = costPrize[i] + "";
-            achivmentTaskText[i].text = taskText[i] + costPrize[i] + taskText[i + 1];
+            achivmentTaskText[i].text = taskText[i+i+1] + _gameMechanism.CostMaxAchievement[i] + taskText[i+i + 2];
         }
     }
 
@@ -31,8 +31,12 @@ public class AchievementsPrize : MonoBehaviour
 
         costPrize[i] += costPrize[i];
 
-        achivmentCostText[i].text = costPrize[i] + "";
-        achivmentTaskText[i].text = taskText[i] + costPrize[i] + taskText[i+1];
+        if (i == 1)
+        {
+            _gameMechanism.lastSpentScoreAchievement += _gameMechanism.scoreCoins;
+        }
+
+        ReloadText();
 
         getAchievementSource.Play();
     }
